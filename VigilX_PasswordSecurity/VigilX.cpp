@@ -1,0 +1,40 @@
+#include "VigilX.h"
+#include <iostream>
+#include <limits>
+using namespace std;
+namespace {
+bool validPassword(const string& password) { return password.size() >= 8; }
+}
+VigilX::VigilX():logger(),userManager(logger),resourceManager(logger),threatSimulator(logger),incidentResponse(logger),reportGenerator(logger),dashboard(logger){}
+User* VigilX::getCurrentUser() const {if(currentUserID==-1)return nullptr;User* u=userManager.findUserByID(currentUserID);if(!u||!u->isActive()||u->isLocked())return nullptr;return u;}
+void VigilX::login(){
+    if(getCurrentUser()){cout<<"A user is already logged in. Log out first.\n";return;}
+    int id;string username,password,confirm;
+    cout<<"Enter User ID: ";if(!(cin>>id)){cin.clear();cin.ignore(numeric_limits<streamsize>::max(),'\n');cout<<"Invalid input.\n";return;}cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    cout<<"Enter username: ";getline(cin,username);User* u=userManager.findUserByID(id);
+    if(!u||u->getUsername()!=username){cout<<"Login failed: invalid credentials.\n";logger.logEvent(username,"Unknown","LOGIN","FAILED_INVALID_USER");return;}
+    if(!u->isActive()){cout<<"Login failed: inactive user.\n";logger.logEvent(username,u->getRole(),"LOGIN","FAILED_INACTIVE");return;}
+    if(u->isLocked()){cout<<"Login blocked: account is locked after 3 failed password attempts. Contact an administrator.\n";logger.logEvent(username,u->getRole(),"LOGIN","FAILED_ACCOUNT_LOCKED");return;}
+    if(u->needsPasswordSetup()){
+        cout<<"This is an existing account from an older VigilX version or it needs password setup. Create a new password.\nNew password (minimum 8 characters): ";getline(cin,password);
+        if(!validPassword(password)){cout<<"Password must contain at least 8 characters.\n";return;}
+        cout<<"Confirm new password: ";getline(cin,confirm);if(password!=confirm){cout<<"Passwords do not match. Please try login again.\n";return;}
+        u->setPassword(password);userManager.saveChanges();currentUserID=id;cout<<"Password created. Login successful. Welcome, "<<username<<"!\n";logger.logEvent(username,u->getRole(),"PASSWORD_INITIALIZED","SUCCESS");logger.logEvent(username,u->getRole(),"LOGIN","SUCCESS");return;
+    }
+    cout<<"Enter password: ";getline(cin,password);
+    if(!u->verifyPassword(password)){
+        u->recordFailedAttempt();userManager.saveChanges();int attempts=u->getFailedAttempts();
+        string result=u->isLocked()?"FAILED_ACCOUNT_LOCKED":"FAILED_WRONG_PASSWORD";
+        logger.logEvent(username,u->getRole(),"LOGIN",result);
+        cout<<"Login failed: incorrect password. Attempts: "<<attempts<<"/3.\n";
+        if(u->isLocked())cout<<"Account locked. An administrator must unlock it.\n";
+        return;
+    }
+    u->resetFailedAttempts();userManager.saveChanges();currentUserID=id;cout<<"Login successful. Welcome, "<<username<<"!\n";logger.logEvent(username,u->getRole(),"LOGIN","SUCCESS");
+}
+void VigilX::logout(){User* u=getCurrentUser();if(!u){currentUserID=-1;cout<<"No active user session.\n";return;}logger.logEvent(u->getUsername(),u->getRole(),"LOGOUT","SUCCESS");cout<<"Logged out successfully.\n";currentUserID=-1;}
+void VigilX::viewSession() const {User* u=getCurrentUser();if(!u){cout<<"No active session.\n";return;}u->display();u->displayPermissions();}
+void VigilX::accessControl(){User* u=getCurrentUser();if(!u){cout<<"Please log in before requesting access.\n";logger.logEvent("Unauthenticated","Unknown","RESOURCE_ACCESS","DENIED_NOT_AUTHENTICATED");return;}resourceManager.requestAccess(*u);}
+void VigilX::changeOwnPassword(){User* u=getCurrentUser();if(!u){cout<<"Please log in before changing a password.\n";return;}string oldPassword,newPassword,confirm;cout<<"Enter current password: ";getline(cin,oldPassword);if(!u->verifyPassword(oldPassword)){logger.logEvent(u->getUsername(),u->getRole(),"PASSWORD_CHANGE","FAILED_WRONG_CURRENT_PASSWORD");cout<<"Current password is incorrect.\n";return;}cout<<"Enter new password (minimum 8 characters): ";getline(cin,newPassword);if(!validPassword(newPassword)){cout<<"Password must contain at least 8 characters.\n";return;}if(newPassword==oldPassword){cout<<"New password must be different from the current password.\n";return;}cout<<"Confirm new password: ";getline(cin,confirm);if(newPassword!=confirm){cout<<"Passwords do not match.\n";return;}u->setPassword(newPassword);userManager.saveChanges();logger.logEvent(u->getUsername(),u->getRole(),"PASSWORD_CHANGE","SUCCESS");cout<<"Password changed successfully.\n";}
+void VigilX::unlockAccount(){User* u=getCurrentUser();if(!u||u->getRole()!="Admin"){cout<<"Access denied: only a logged-in Admin can unlock accounts.\n";logger.logEvent(u?u->getUsername():"Unauthenticated",u?u->getRole():"Unknown","ACCOUNT_UNLOCK","DENIED_NOT_ADMIN");return;}userManager.unlockUserAccount();}
+void VigilX::run(){int choice;do{cout<<"\n========== VIGILX SECURITY ENGINE ==========\n1. Add User\n2. View Users\n3. Search User\n4. Delete User\n5. Add Resource\n6. View Resources\n7. Search/Delete Resource\n8. Security Logs\n9. Security Statistics\n10. Login\n11. Logout\n12. View Current Session\n13. Request Resource Access\n14. Threat Alerts\n15. Threat Simulator\n16. Incident Response\n17. Security Reports / Analytics\n18. Security Dashboard\n19. Change My Password\n20. Admin: Unlock User Account\n0. Exit\n============================================\nEnter choice: ";if(!(cin>>choice)){cin.clear();cin.ignore(numeric_limits<streamsize>::max(),'\n');cout<<"Invalid input.\n";continue;}cin.ignore(numeric_limits<streamsize>::max(),'\n');switch(choice){case 1:userManager.addUser();break;case 2:userManager.viewUsers();break;case 3:userManager.searchUser();break;case 4:userManager.deleteUser();break;case 5:resourceManager.addResource();break;case 6:resourceManager.viewResources();break;case 7:{int sub;cout<<"1. Search Resource\n2. Delete Resource\nChoice: ";if(!(cin>>sub)){cin.clear();cin.ignore(numeric_limits<streamsize>::max(),'\n');cout<<"Invalid input.\n";break;}cin.ignore(numeric_limits<streamsize>::max(),'\n');if(sub==1)resourceManager.searchResource();else if(sub==2)resourceManager.deleteResource();else cout<<"Invalid choice.\n";break;}case 8:logger.viewLogs();break;case 9:logger.viewStatistics();break;case 10:login();break;case 11:logout();break;case 12:viewSession();break;case 13:accessControl();break;case 14:logger.viewThreatAlerts();break;case 15:threatSimulator.runMenu();break;case 16:incidentResponse.runMenu();break;case 17:reportGenerator.runMenu();break;case 18:dashboard.runMenu();break;case 19:changeOwnPassword();break;case 20:unlockAccount();break;case 0:if(getCurrentUser())logout();cout<<"Exiting VigilX. Goodbye!\n";break;default:cout<<"Invalid choice.\n";}}while(choice!=0);}

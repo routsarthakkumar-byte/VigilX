@@ -1,0 +1,5 @@
+1 | 2026-10-20 00:01:32 | Sarthak | Admin | USER_CREATED | SUCCESS
+2 | 2026-10-20 00:01:51 | Skr | Employee | USER_CREATED | SUCCESS
+3 | 2026-10-20 00:02:13 | Sarthak | Admin | LOGIN | SUCCESS
+4 | 2026-10-20 00:02:24 | Skr | Guest | USER_ROLE_CHANGED | SUCCESS_FROM_Employee
+5 | 2026-10-20 00:03:21 | Sarthak | Admin | LOGOUT | SUCCESS

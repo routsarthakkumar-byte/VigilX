@@ -1,0 +1,67 @@
+VIGILX - EVENT CORRELATION & ATTACK CHAIN ANALYSIS EDITION
+
+This edition extends the previous VigilX C++17 OOP security simulation with a local event-correlation module.
+
+NEW MODULE
+- Main menu option 24: Event Correlation & Attack Chain Analysis.
+- Accessible to a logged-in Admin (or SecurityAnalyst if that role is enabled in the project).
+- Correlates events by username across the readable security_logs.txt history.
+- Detects repeated failed logins, failed logins combined with access denials, high-risk assessments combined with simulated threat activity, and repeated access denials.
+- Shows severity, evidence event IDs, and suggested review actions.
+- Exports event_correlation.txt and event_correlation.csv.
+- Lets authorized users view the most recently saved report.
+
+CORRELATION RULES
+1. At least 3 failed login events for a username -> HIGH.
+2. At least one failed login and one denied resource access event for a username -> HIGH.
+3. At least one high-risk assessment and one simulated threat event for a username -> CRITICAL.
+4. At least 3 denied resource access events for a username -> MEDIUM.
+
+BUILD (Windows PowerShell, from this folder)
+g++ -std=c++17 -Wall -Wextra main.cpp Utils.cpp PasswordUtils.cpp PermissionManager.cpp SecurityPolicyEngine.cpp EventCorrelationEngine.cpp User.cpp Resource.cpp SecurityLogger.cpp UserManager.cpp RiskScoringEngine.cpp ResourceManager.cpp Threat.cpp ThreatSimulator.cpp IncidentResponseEngine.cpp SecurityReportGenerator.cpp SecurityDashboard.cpp VigilX.cpp -o VigilX.exe
+
+RUN
+.\VigilX.exe
+
+FILES
+- event_correlation.txt: readable latest correlation report.
+- event_correlation.csv: spreadsheet-compatible latest correlation report.
+- Existing user/resource/log/incident/permission/policy files are used as in the previous edition.
+
+IMPORTANT
+This is an educational local simulation. It scans events present in local security_logs.txt, groups evidence by username across the available history, and uses simple heuristic rules. It does not establish causality, prove an attack, monitor external systems, or take real containment actions. Review findings before making decisions. Keep previous edition folders as backups; do not nest this folder inside an older project folder.
+
+
+USER BEHAVIOR ANALYTICS (OPTION 25)
+----------------------------------
+- Builds per-username activity profiles from security_logs.txt.
+- Summarizes successful/failed logins, granted/denied resource access, high-risk assessments, and failed password changes.
+- Uses configurable educational heuristic points to classify behavior as LOW, MEDIUM, or HIGH risk.
+- Shows matching evidence event IDs and recommended analyst follow-up.
+- Exports user_behavior_report.txt and user_behavior_report.csv.
+- Only Admin and SecurityAnalyst roles can run the module.
+- This is a heuristic educational feature: unusual activity is not proof of malicious intent, and the module does not monitor external systems.
+
+COMPILE (C++17)
+---------------
+g++ -std=c++17 -Wall -Wextra main.cpp Utils.cpp PasswordUtils.cpp PermissionManager.cpp SecurityPolicyEngine.cpp EventCorrelationEngine.cpp UserBehaviorAnalytics.cpp User.cpp Resource.cpp SecurityLogger.cpp UserManager.cpp RiskScoringEngine.cpp ResourceManager.cpp Threat.cpp ThreatSimulator.cpp IncidentResponseEngine.cpp SecurityReportGenerator.cpp SecurityDashboard.cpp VigilX.cpp -o VigilX.exe
+
+SECURITY CASE MANAGEMENT & INVESTIGATION (OPTION 26)
+----------------------------------------------------
+- Create investigation cases with title, severity, related username, evidence event IDs, assigned analyst, and initial notes.
+- View the case register, update workflow status, and append investigation notes.
+- Review the latest 10 security events to select evidence IDs.
+- Export the case register to TXT and CSV.
+- Stores cases persistently in security_cases.txt.
+- Access is limited to Admin and SecurityAnalyst roles.
+- CONTAINED_SIMULATED is only a case workflow label; this module does not perform real containment.
+
+COMPILE (C++17)
+---------------
+g++ -std=c++17 -Wall -Wextra main.cpp Utils.cpp PasswordUtils.cpp PermissionManager.cpp SecurityPolicyEngine.cpp EventCorrelationEngine.cpp UserBehaviorAnalytics.cpp SecurityCaseManager.cpp User.cpp Resource.cpp SecurityLogger.cpp UserManager.cpp RiskScoringEngine.cpp ResourceManager.cpp Threat.cpp ThreatSimulator.cpp IncidentResponseEngine.cpp SecurityReportGenerator.cpp SecurityDashboard.cpp VigilX.cpp -o VigilX.exe
+
+OUTPUT FILES
+------------
+- security_cases.txt: persistent local case register.
+- security_case_report.txt: readable case report.
+- security_case_report.csv: spreadsheet-compatible case report.

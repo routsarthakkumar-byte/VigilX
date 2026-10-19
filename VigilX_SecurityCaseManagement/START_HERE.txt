@@ -1,0 +1,13 @@
+VigilX - Security Case Management Edition
+
+1. Extract this ZIP. It contains one folder named VigilX_SecurityCaseManagement.
+2. Open that folder in VS Code.
+3. Open Terminal in that folder.
+4. Compile using the command below (Windows with g++ / MinGW):
+
+g++ -std=c++17 -Wall -Wextra main.cpp Utils.cpp PasswordUtils.cpp PermissionManager.cpp SecurityPolicyEngine.cpp EventCorrelationEngine.cpp UserBehaviorAnalytics.cpp SecurityCaseManager.cpp User.cpp Resource.cpp SecurityLogger.cpp UserManager.cpp RiskScoringEngine.cpp ResourceManager.cpp Threat.cpp ThreatSimulator.cpp IncidentResponseEngine.cpp SecurityReportGenerator.cpp SecurityDashboard.cpp VigilX.cpp -o VigilX.exe
+
+5. Run:
+   .\VigilX.exe
+
+Runtime data and generated reports are intentionally not included so the project starts clean. Existing data files from your previous working project can be copied into this folder if needed.

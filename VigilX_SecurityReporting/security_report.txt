@@ -1,0 +1,11 @@
+VIGILX SECURITY REPORT
+======================
+Report source: local VigilX text data files
+
+Registered resources: 0
+Registered users: 0
+Total incidents: 0
+Total security events: 0
+
+Note: This report summarizes recorded educational simulations and events.
+It does not certify real-world security or perform real containment.

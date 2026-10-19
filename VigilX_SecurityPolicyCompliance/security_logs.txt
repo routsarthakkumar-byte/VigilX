@@ -1,0 +1,1 @@
+1 | 2026-10-20 00:08:06 | Unauthenticated | Unknown | POLICY_AUDIT | DENIED_NOT_AUTHENTICATED
