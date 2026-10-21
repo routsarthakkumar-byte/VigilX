@@ -1,0 +1,10 @@
+VIGILX MODULE 30 — START HERE
+
+1. Extract the ZIP.
+2. Open the folder VigilX_30_AdvancedMetrics in VS Code.
+3. Open Terminal in that folder.
+4. Copy the compile command from README.txt and run it.
+5. Start the program using .\VigilX.exe
+6. Keep previous editions as backups; this folder is separate.
+
+This edition is a local educational simulation.

@@ -1,0 +1,9 @@
+VigilX — Advanced Security Metrics
+
+1. Extract the ZIP. It contains a single project folder.
+2. Open that folder in VS Code.
+3. Run the compile command in README.txt from the project folder.
+4. Run .\VigilX.exe
+5. Log in as Admin to access administrative modules.
+
+Do not overwrite earlier edition folders. Runtime files are omitted for a clean start; copy them from your latest working edition if you need existing data.
