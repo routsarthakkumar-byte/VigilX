@@ -1,0 +1,5 @@
+1 | Repeated Failed Logins | A username should not have 3 or more failed login events. | ENABLED
+2 | Repeated Access Denials | A username should not have 3 or more denied resource access events. | ENABLED
+3 | High-Risk Access Assessment | High-risk resource access assessments must be reviewed. | ENABLED
+4 | Privileged Action Denials | Unauthorized attempts to manage roles or permissions must be reviewed. | ENABLED
+5 | Incident Follow-up | Detected incidents should not remain OPEN after analyst review. | ENABLED
