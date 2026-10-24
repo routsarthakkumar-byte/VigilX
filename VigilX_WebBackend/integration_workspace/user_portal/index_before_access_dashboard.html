@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VigilX | Secure Access</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #0b1120;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .layout { width: 100%; max-width: 440px; }
+    .brand { text-align: center; margin-bottom: 24px; }
+    .brand h1 { margin: 0; color: #67e8f9; letter-spacing: 3px; }
+    .brand p { color: #94a3b8; font-size: 14px; }
+    .card {
+      background: #111b2e;
+      border: 1px solid #26354d;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 60px #0005;
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    button, input, select { font: inherit; }
+    .tabs button {
+      flex: 1; padding: 11px; border: 0; border-radius: 8px;
+      background: #1e293b; color: #cbd5e1; cursor: pointer;
+    }
+    .tabs button.active { background: #0891b2; color: white; }
+    h2 { margin-top: 0; }
+    label { display: block; margin: 16px 0 7px; color: #cbd5e1; font-size: 14px; }
+    input, select {
+      width: 100%; padding: 12px; border-radius: 8px;
+      border: 1px solid #334155; background: #0b1120; color: white;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: #22d3ee; }
+    .submit {
+      width: 100%; margin-top: 22px; padding: 13px;
+      border: 0; border-radius: 8px; background: #06b6d4;
+      color: #082f49; font-weight: bold; cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .message { min-height: 20px; font-size: 14px; line-height: 1.5; }
+    .error { color: #fca5a5; }
+    .success { color: #86efac; }
+    .muted { color: #94a3b8; font-size: 13px; }
+    [hidden] { display: none !important; }
+    .user-row {
+      padding: 12px; margin-top: 10px; border-radius: 8px;
+      background: #1e293b; overflow-wrap: anywhere;
+    }
+    .logout {
+      width: 100%; margin-top: 18px; padding: 12px;
+      border: 1px solid #475569; border-radius: 8px;
+      background: transparent; color: #e2e8f0; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <header class="brand">
+      <h1>VIGILX</h1>
+      <p>Cybersecurity Threat Simulation &amp; Security Operations</p>
+    </header>
+
+    <section class="card" id="authPanel">
+      <div class="tabs">
+        <button id="loginTab" class="active" type="button">Login</button>
+        <button id="signupTab" type="button">Sign Up</button>
+      </div>
+
+      <form id="loginForm">
+        <h2>Welcome back</h2>
+        <p class="muted">Sign in to access your security dashboard.</p>
+        <label for="loginUsername">Username</label>
+        <input id="loginUsername" name="username" required maxlength="64"
+               autocomplete="username">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" name="password" type="password" required
+               autocomplete="current-password">
+        <button class="submit" type="submit">Login securely</button>
+      </form>
+
+      <form id="signupForm" hidden>
+        <h2>Create account</h2>
+        <p class="muted">Register to access the VigilX test dashboard.</p>
+        <label for="signupUsername">Username</label>
+        <input id="signupUsername" name="username" required maxlength="64"
+               autocomplete="username">
+        <label for="signupPassword">Password</label>
+        <input id="signupPassword" name="password" type="password" required
+               minlength="8" autocomplete="new-password">
+        <label for="signupRole">Role</label>
+        <select id="signupRole" name="role" required>
+          <option value="Employee">Employee</option>
+          <option value="Guest">Guest</option>
+        </select>
+        <button class="submit" type="submit">Create account</button>
+      </form>
+
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" id="dashboard" hidden>
+      <h2>Security Dashboard</h2>
+      <p class="muted">Authenticated session active.</p>
+      <p id="welcome"></p>
+      <h3>Registered users</h3>
+      <div id="userList"></div>
+      <p id="dashboardMessage" class="message" role="status"></p>
+      <button id="logoutButton" class="logout" type="button">Log out</button>
+    </section>
+  </main>
+
+  <script>
+    const authPanel = document.getElementById("authPanel");
+    const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const message = document.getElementById("message");
+
+    function showMessage(text, type = "error") {
+      message.textContent = text;
+      message.className = "message " + type;
+    }
+
+    function switchForm(mode) {
+      const loginMode = mode === "login";
+      loginForm.hidden = !loginMode;
+      signupForm.hidden = loginMode;
+      loginTab.classList.toggle("active", loginMode);
+      signupTab.classList.toggle("active", !loginMode);
+      showMessage("");
+    }
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        credentials: "same-origin",
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...options.headers
+        }
+      });
+
+      const text = await response.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch {}
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Request failed (${response.status})`);
+      }
+      return data;
+    }
+
+    async function loadDashboard(username) {
+      const data = await apiRequest("/api/users");
+      document.getElementById("welcome").textContent =
+        "Welcome, " + (username || "authenticated user");
+
+      const list = document.getElementById("userList");
+      list.replaceChildren();
+
+      for (const user of (data.users || [])) {
+        const row = document.createElement("div");
+        row.className = "user-row";
+        row.textContent = `${user.username} — ${user.role}`;
+        list.appendChild(row);
+      }
+
+      authPanel.hidden = true;
+      dashboard.hidden = false;
+    }
+
+    loginTab.addEventListener("click", () => switchForm("login"));
+    signupTab.addEventListener("click", () => switchForm("signup"));
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = loginForm.querySelector('button[type="submit"]');
+      button.disabled = true;
+      showMessage("Signing in...", "success");
+
+      try {
+        const result = await apiRequest("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            username: loginForm.username.value.trim(),
+            password: loginForm.password.value
+          })
+        });
+
+        await loadDashboard(result.username);
+      } catch (error) {
+        showMessage(error.message);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    signupForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = signupForm.querySelector('button[type="submit"]');
+      button.disabled = true;
+      showMessage("Creating account...", "success");
+
+      try {
+        const result = await apiRequest("/api/auth/signup", {
+          method: "POST",
+          body: JSON.stringify({
+            username: signupForm.username.value.trim(),
+            password: signupForm.password.value,
+            role: signupForm.role.value
+          })
+        });
+
+        signupForm.reset();
+        switchForm("login");
+        document.getElementById("loginUsername").value =
+          document.getElementById("signupUsername").value.trim();
+        showMessage(result.message || "Account created. Please log in.", "success");
+      } catch (error) {
+        showMessage(error.message);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      const button = document.getElementById("logoutButton");
+      button.disabled = true;
+
+      try {
+        await apiRequest("/api/auth/logout", { method: "POST" });
+      } catch (error) {
+        document.getElementById("dashboardMessage").textContent = error.message;
+      } finally {
+        dashboard.hidden = true;
+        authPanel.hidden = false;
+        loginForm.reset();
+        switchForm("login");
+        button.disabled = false;
+      }
+    });
+
+    async function checkExistingSession() {
+      try {
+        await loadDashboard("");
+      } catch {
+        authPanel.hidden = false;
+        dashboard.hidden = true;
+      }
+    }
+
+    checkExistingSession();
+  </script>
+</body>
+</html>

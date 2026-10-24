@@ -1,0 +1,4 @@
+1 | Public | TestResource
+2 | Internal | InternalTestResource
+3 | Confidential | ConfidentialTestResource
+4 | Public | IntegrationResourceCheck

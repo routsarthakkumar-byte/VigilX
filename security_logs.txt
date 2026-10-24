@@ -35,3 +35,5 @@
 35 | 2026-10-22 13:36:19 | Sarthak | Employee | RESOURCE_ACCESS:phones | DENIED
 36 | 2026-10-22 13:37:50 | Sarthak | Employee | RISK_ASSESSMENT:phones | SCORE_100_HIGH
 37 | 2026-10-22 13:37:50 | Sarthak | Employee | RESOURCE_ACCESS:phones | DENIED
+38 | 2026-10-23 08:38:58 | Sarthak | Employee | RISK_ASSESSMENT:phones | SCORE_100_HIGH
+39 | 2026-10-23 08:38:58 | Sarthak | Employee | RESOURCE_ACCESS:phones | DENIED

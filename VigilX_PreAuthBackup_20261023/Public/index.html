@@ -1,0 +1,348 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VigilX | Security Operations</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">V</div>
+            <div>
+                <h2>VigilX</h2>
+                <p>SECURITY OPERATIONS</p>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <a class="nav-item active" href="#overview"><span>▦</span> Overview</a>
+        <a class="nav-item" href="#analytics"><span>▤</span> Analytics</a>
+        <a class="nav-item" href="#access-test"><span>⛨</span> Access Simulator</a>
+        <a class="nav-item" href="#alerts"><span>⚠</span> Threat Alerts</a>
+        <a class="nav-item" href="#users"><span>♙</span> User Management</a>
+        <a class="nav-item" href="#resources"><span>⬡</span> Resources</a>
+        <a class="nav-item" href="#logs"><span>≡</span> Security Logs</a>
+        <a class="nav-item" href="#connection"><span>⌁</span> Backend Connection</a>
+
+        <div class="sidebar-bottom">
+            <div class="connection-indicator">
+                <span class="status-dot" id="sidebarDot"></span>
+                <div>
+                    <strong id="sidebarStatus">Checking server...</strong>
+                    <p>C++ ENGINE API</p>
+                </div>
+            </div>
+            <p class="version">VigilX · Local Environment</p>
+        </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">SECURITY CENTER / OVERVIEW</p>
+                <h1>Security Dashboard</h1>
+                <p class="subtitle">Monitor your VigilX environment from one place.</p>
+            </div>
+            <div class="top-actions">
+                <span class="environment">
+                    <span class="status-dot"></span> LOCAL ENVIRONMENT
+                </span>
+                <button id="refreshButton" class="refresh-button">
+                    ↻ Refresh dashboard
+                </button>
+            </div>
+        </header>
+
+        <section class="welcome-panel">
+            <div>
+                <p class="eyebrow light">VIGILX CONTROL CENTER</p>
+                <h2>Your security operations,<br>in one workspace.</h2>
+                <p>Monitor recorded activity from your C++ security engine.</p>
+            </div>
+            <div class="shield-art" aria-hidden="true">⬡</div>
+        </section>
+
+        <section class="section-heading">
+            <div>
+                <h2>System Overview</h2>
+                <p>Statistics calculated from saved backend records.</p>
+            </div>
+            <span class="live-label">C++ BACKEND</span>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-top"><span>Backend Status</span><span class="stat-icon">⌁</span></div>
+                <h3 id="backendStatus">Checking...</h3>
+                <p id="backendDescription">Contacting the C++ server</p>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top"><span>Total Users</span><span class="stat-icon">♙</span></div>
+                <h3 id="totalUsers">—</h3>
+                <p>Saved user records</p>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top"><span>Resources</span><span class="stat-icon">⬡</span></div>
+                <h3 id="totalResources">—</h3>
+                <p>Saved resource records</p>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top"><span>Security Events</span><span class="stat-icon">≡</span></div>
+                <h3 id="totalLogs">—</h3>
+                <p>Recorded audit events</p>
+            </article>
+        </section>
+
+        <section class="content-grid" id="analytics">
+            <article class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Security Analytics</h2>
+                        <p id="dataApiDescription">Loading saved security activity...</p>
+                    </div>
+                    <span class="count-badge" id="dataApiStatus">Loading</span>
+                </div>
+
+                <div class="stats-grid analytics-grid">
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Failed Logins</span></div>
+                        <h3 id="failedLogins">—</h3>
+                        <p>Recorded failed login events</p>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Successful Logins</span></div>
+                        <h3 id="successfulLogins">—</h3>
+                        <p>Recorded successful login events</p>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Denied Access</span></div>
+                        <h3 id="deniedAccesses">—</h3>
+                        <p>Denied resource requests</p>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-top"><span>High-Risk Assessments</span></div>
+                        <h3 id="highRiskAssessments">—</h3>
+                        <p>Assessments marked HIGH</p>
+                    </article>
+                </div>
+
+                <p id="analyticsMessage" class="table-message"></p>
+            </article>
+
+            <article class="panel" id="alerts">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Threat Alerts</h2>
+                        <p>Rule-based alerts from recorded security logs.</p>
+                    </div>
+                    <span class="count-badge" id="alertCount">0 ALERTS</span>
+                </div>
+
+                <div id="alertsList" class="alerts-list">
+                    <p>Loading alerts...</p>
+                </div>
+
+                <p class="subtitle">
+                    Alerts describe historical records and do not independently confirm an active attack.
+                </p>
+            </article>
+        </section>
+
+        <!-- ACCESS CONTROL SIMULATOR -->
+        <section class="panel data-panel" id="access-test">
+            <div class="panel-heading">
+                <div>
+                    <h2>Access Control Simulator</h2>
+                    <p>Evaluate a user's resource access using VigilX risk and permission rules.</p>
+                </div>
+                <span class="count-badge">C++ ENGINE</span>
+            </div>
+
+            <form id="accessTestForm" class="access-test-form">
+                <div class="form-field">
+                    <label for="accessUser">Select User</label>
+                    <select id="accessUser" name="userID" required>
+                        <option value="">Loading users...</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="accessResource">Select Resource</label>
+                    <select id="accessResource" name="resourceID" required>
+                        <option value="">Loading resources...</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="runAccessTest" class="primary-button">
+                    Run Access Test
+                </button>
+            </form>
+
+            <div id="accessTestError" class="response-box" hidden></div>
+
+            <div id="accessTestResult" class="access-result" hidden aria-live="polite">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Access Assessment Result</h3>
+                        <p id="accessResultDescription">Assessment completed.</p>
+                    </div>
+                    <span id="accessDecision" class="count-badge">—</span>
+                </div>
+
+                <div class="stats-grid access-result-grid">
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Risk Score</span></div>
+                        <h3 id="accessRiskScore">—</h3>
+                        <p>Out of 100</p>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Risk Level</span></div>
+                        <h3 id="accessRiskLevel">—</h3>
+                        <p>Calculated risk category</p>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top"><span>Previous Denials</span></div>
+                        <h3 id="accessPreviousDenials">—</h3>
+                        <p>Earlier denied requests for this username</p>
+                    </article>
+                </div>
+
+                <div class="diagnostic-line">
+                    <span>Selected User</span>
+                    <strong id="accessResultUser">—</strong>
+                </div>
+                <div class="diagnostic-line">
+                    <span>Selected Resource</span>
+                    <strong id="accessResultResource">—</strong>
+                </div>
+                <div class="diagnostic-line">
+                    <span>Permission Decision</span>
+                    <strong id="accessPermissionMessage">—</strong>
+                </div>
+                <p class="subtitle">
+                    Risk level and permission decision are separate: access is determined by the role permission rules.
+                </p>
+            </div>
+        </section>
+
+        <section class="panel data-panel" id="users">
+            <div class="panel-heading">
+                <div>
+                    <h2>User Management</h2>
+                    <p>Users retrieved from the C++ backend.</p>
+                </div>
+                <span class="count-badge" id="usersCount">0 USERS</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>User ID</th><th>Username</th><th>Role</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="3">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel data-panel" id="resources">
+            <div class="panel-heading">
+                <div>
+                    <h2>Resource Management</h2>
+                    <p>Saved resources and their classifications.</p>
+                </div>
+                <span class="count-badge" id="resourcesCount">0 RESOURCES</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Resource ID</th><th>Resource Name</th><th>Classification</th></tr>
+                    </thead>
+                    <tbody id="resourcesTableBody">
+                        <tr><td colspan="3">Loading resources...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel data-panel" id="logs">
+            <div class="panel-heading">
+                <div>
+                    <h2>Recent Security Logs</h2>
+                    <p>Latest audit events returned by the backend.</p>
+                </div>
+                <span class="count-badge">RECENT EVENTS</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event ID</th><th>Timestamp</th><th>Username</th>
+                            <th>Role</th><th>Action</th><th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                        <tr><td colspan="6">Loading logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel data-panel" id="connection">
+            <div class="panel-heading">
+                <div>
+                    <h2>Backend Connection</h2>
+                    <p>Health and API diagnostics.</p>
+                </div>
+                <span class="count-badge" id="apiStatus">Checking</span>
+            </div>
+
+            <div class="endpoint-box">
+                <span class="endpoint-method">GET</span>
+                <code>/api/health</code>
+            </div>
+
+            <div class="diagnostic-line">
+                <span>Server address</span><strong>127.0.0.1:8080</strong>
+            </div>
+            <div class="diagnostic-line">
+                <span>Last checked</span><strong id="lastChecked">Not checked</strong>
+            </div>
+            <div class="diagnostic-line">
+                <span>Response</span><strong id="responseStatus">Waiting...</strong>
+            </div>
+
+            <div class="response-box">
+                <p>HEALTH API RESPONSE</p>
+                <pre id="healthResponse">Waiting for backend...</pre>
+            </div>
+
+            <div id="dataError" class="response-box" hidden></div>
+
+            <button id="testButton" class="primary-button">
+                Test connection and refresh data
+            </button>
+        </section>
+
+        <footer>
+            <span>VigilX Security Operations Dashboard</span>
+            <span>Educational security simulation · Local development</span>
+        </footer>
+    </main>
+
+    <script src="/app.js"></script>
+</body>
+</html>
+
